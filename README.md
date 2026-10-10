@@ -112,6 +112,17 @@ python -m http.server 8080
 npx serve
 ```
 
+### Deploy to Vercel / Netlify / GitHub Pages
+
+Unsigned static HTML/CSS/JS deploys with no build step:
+
+- **Vercel** — import the repo; `vercel.json` (already included) sets the framework to "Other/no build"
+  and serves the repo root, so no configuration is needed in the dashboard.
+- **GitHub Pages** — push to GitHub, enable Pages from the `main` branch root.
+- **Netlify** — drag-and-drop the folder or connect the repo; build command: none, publish dir: `/`.
+
+The app needs zero installation and makes no server requests, so any static host works.
+
 ### Run the tests
 
 ```
