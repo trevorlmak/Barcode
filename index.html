@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Free, unlimited, offline-friendly barcode generator. Create Code 128, Code 39, EAN-13, EAN-8, UPC-A, ITF and Codabar barcodes and export as PNG, SVG or PDF.">
+  <meta name="color-scheme" content="light dark">
+  <title>Barcode Studio &mdash; Free Unlimited Barcode Generator</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='6' fill='%232f6df6'/%3E%3Cg fill='%23fff'%3E%3Crect x='6' y='7' width='2' height='18'/%3E%3Crect x='10' y='7' width='3' height='18'/%3E%3Crect x='15' y='7' width='2' height='18'/%3E%3Crect x='19' y='7' width='4' height='18'/%3E%3Crect x='25' y='7' width='2' height='18'/%3E%3C/g%3E%3C/svg%3E">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">
+        <svg viewBox="0 0 32 32" width="28" height="28" focusable="false">
+          <rect width="32" height="32" rx="7" fill="currentColor"></rect>
+          <g fill="#fff">
+            <rect x="6" y="7" width="2" height="18"></rect>
+            <rect x="10" y="7" width="3" height="18"></rect>
+            <rect x="15" y="7" width="2" height="18"></rect>
+            <rect x="19" y="7" width="4" height="18"></rect>
+            <rect x="25" y="7" width="2" height="18"></rect>
+          </g>
+        </svg>
+      </span>
+      <div class="brand-text">
+        <h1>Barcode Studio</h1>
+        <p>Free &middot; Unlimited &middot; Works offline</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button id="themeToggle" class="icon-btn" type="button" aria-label="Toggle dark mode" title="Toggle dark mode">
+        <span class="theme-icon theme-icon-light" aria-hidden="true">&#9788;</span>
+        <span class="theme-icon theme-icon-dark" aria-hidden="true">&#9789;</span>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" class="app-main">
+    <nav class="tabs" role="tablist" aria-label="Modes">
+      <button class="tab is-active" id="tab-single" role="tab" aria-selected="true" aria-controls="panel-single" data-tab="single" type="button">Single barcode</button>
+      <button class="tab" id="tab-bulk" role="tab" aria-selected="false" aria-controls="panel-bulk" data-tab="bulk" type="button">Bulk generation</button>
+    </nav>
+
+    <!-- ================= SINGLE ================= -->
+    <section id="panel-single" class="panel" role="tabpanel" aria-labelledby="tab-single">
+      <div class="layout">
+        <!-- Controls -->
+        <div class="card">
+          <div class="card-head">
+            <h2>Barcode data</h2>
+          </div>
+          <div class="field">
+            <label for="barcodeData">Content</label>
+            <input id="barcodeData" type="text" autocomplete="off" spellcheck="false"
+                   placeholder="Enter text, numbers or a product code" value="5901234123457">
+          </div>
+
+          <div class="field">
+            <label for="formatSelect">Format</label>
+            <select id="formatSelect"></select>
+          </div>
+
+          <p id="formatNote" class="field-note"></p>
+
+          <div id="message" class="message" role="status" aria-live="polite"></div>
+
+          <div class="button-row">
+            <button id="generateBtn" class="btn btn-primary" type="button">Generate</button>
+            <button id="resetBtn" class="btn btn-ghost" type="button">Reset</button>
+          </div>
+
+          <details class="settings" open>
+            <summary>Customization</summary>
+            <div class="settings-grid">
+              <div class="field">
+                <label for="optWidth">Bar width <output id="optWidthOut">2</output>px</label>
+                <input id="optWidth" type="range" min="1" max="6" step="1" value="2">
+              </div>
+              <div class="field">
+                <label for="optHeight">Height <output id="optHeightOut">120</output>px</label>
+                <input id="optHeight" type="range" min="40" max="300" step="5" value="120">
+              </div>
+              <div class="field">
+                <label for="optMargin">Margin <output id="optMarginOut">10</output>px</label>
+                <input id="optMargin" type="range" min="0" max="40" step="1" value="10">
+              </div>
+              <div class="field">
+                <label for="optFontSize">Text size <output id="optFontSizeOut">16</output>px</label>
+                <input id="optFontSize" type="range" min="8" max="36" step="1" value="16">
+              </div>
+              <div class="field">
+                <label for="optTextMargin">Text margin <output id="optTextMarginOut">4</output>px</label>
+                <input id="optTextMargin" type="range" min="0" max="30" step="1" value="4">
+              </div>
+              <div class="field">
+                <label for="optTextPosition">Text position</label>
+                <select id="optTextPosition">
+                  <option value="bottom" selected>Bottom</option>
+                  <option value="top">Top</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="optLineColor">Bar color</label>
+                <div class="color-control">
+                  <input id="optLineColor" type="color" value="#000000">
+                  <input id="optLineColorText" type="text" value="#000000" spellcheck="false" aria-label="Bar color hex value">
+                </div>
+              </div>
+              <div class="field">
+                <label for="optBackground">Background</label>
+                <div class="color-control">
+                  <input id="optBackground" type="color" value="#ffffff">
+                  <input id="optBackgroundText" type="text" value="#ffffff" spellcheck="false" aria-label="Background color hex value">
+                </div>
+              </div>
+              <div class="field field-check">
+                <label class="checkbox">
+                  <input id="optDisplayValue" type="checkbox" checked>
+                  <span>Show human-readable text</span>
+                </label>
+              </div>
+              <div class="field">
+                <label for="optExportScale">Export quality</label>
+                <select id="optExportScale">
+                  <option value="1">1&times; (fast)</option>
+                  <option value="2">2&times;</option>
+                  <option value="3" selected>3&times; (recommended)</option>
+                  <option value="4">4&times;</option>
+                  <option value="6">6&times; (print)</option>
+                  <option value="8">8&times; (max)</option>
+                </select>
+              </div>
+            </div>
+          </details>
+        </div>
+
+        <!-- Preview -->
+        <div class="card preview-card">
+          <div class="card-head">
+            <h2>Preview</h2>
+            <span id="previewMeta" class="badge"></span>
+          </div>
+          <div id="previewArea" class="preview-area" aria-live="polite">
+            <p class="preview-empty">Your barcode preview appears here.</p>
+          </div>
+
+          <div class="export-grid">
+            <button id="downloadPng" class="btn btn-outline" type="button">Download PNG</button>
+            <button id="downloadSvg" class="btn btn-outline" type="button">Download SVG</button>
+            <button id="downloadPdf" class="btn btn-outline" type="button">Download PDF</button>
+            <button id="printBtn" class="btn btn-outline" type="button">Print</button>
+          </div>
+          <p class="disclaimer">
+            Generated barcodes are not officially assigned or registered. To use a barcode in retail or
+            logistics, obtain a legitimate GTIN / EAN / UPC from the relevant issuing authority.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= BULK ================= -->
+    <section id="panel-bulk" class="panel hidden" role="tabpanel" aria-labelledby="tab-bulk">
+      <div class="card">
+        <div class="card-head">
+          <h2>Bulk generation</h2>
+        </div>
+        <p class="field-note">
+          One barcode per line. Optionally append a format after a comma, e.g.
+          <code>123456,CODE39</code>. You can also import a CSV file whose first column holds the
+          value and optional second column holds the format.
+        </p>
+
+        <div class="field">
+          <label for="bulkInput">Values</label>
+          <textarea id="bulkInput" rows="7" spellcheck="false"
+            placeholder="5901234123457&#10;CODE39-001,CODE39&#10;96385074"></textarea>
+        </div>
+
+        <div class="bulk-toolbar">
+          <div class="field field-inline">
+            <label for="bulkFormat">Default format</label>
+            <select id="bulkFormat"></select>
+          </div>
+          <div class="field field-inline">
+            <label for="bulkFile">Import CSV</label>
+            <input id="bulkFile" type="file" accept=".csv,text/csv,text/plain">
+          </div>
+        </div>
+
+        <div class="button-row">
+          <button id="bulkGenerate" class="btn btn-primary" type="button">Generate all</button>
+          <button id="bulkSample" class="btn btn-ghost" type="button">Load sample</button>
+          <button id="bulkClear" class="btn btn-ghost" type="button">Clear</button>
+        </div>
+
+        <div id="bulkSummary" class="message" role="status" aria-live="polite"></div>
+
+        <div class="button-row bulk-downloads" id="bulkDownloads" hidden>
+          <button id="bulkZipPng" class="btn btn-outline" type="button">Download ZIP (PNG)</button>
+          <button id="bulkZipSvg" class="btn btn-outline" type="button">Download ZIP (SVG)</button>
+          <button id="bulkPrintAll" class="btn btn-outline" type="button">Print all</button>
+        </div>
+      </div>
+
+      <div id="bulkResults" class="bulk-results"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>
+      Runs entirely in your browser &mdash; no accounts, quotas, tracking or expiry.
+      Data never leaves your device.
+    </p>
+  </footer>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="vendor/JsBarcode.all.min.js"></script>
+  <script src="vendor/jspdf.umd.min.js"></script>
+  <script src="vendor/jszip.min.js"></script>
+  <script src="js/validators.js"></script>
+  <script src="js/bulk.js"></script>
+  <script src="js/exporters.js"></script>
+  <script src="js/theme.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,24 @@
+{
+  "name": "barcode-studio",
+  "version": "1.0.0",
+  "description": "Free, unlimited, offline barcode generator web app. No accounts, quotas, tracking or expiry.",
+  "private": true,
+  "scripts": {
+    "test": "node tests/test.js",
+    "start": "node scripts/serve.js",
+    "build": "node scripts/build-offline.js"
+  },
+  "keywords": [
+    "barcode",
+    "barcode-generator",
+    "code128",
+    "code39",
+    "ean13",
+    "ean8",
+    "upc",
+    "itf",
+    "codabar",
+    "offline"
+  ],
+  "license": "MIT"
+}

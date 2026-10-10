@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Browser smoke test</title>
+<style>body{font:14px monospace;background:#111;color:#eee;padding:20px;} .pass{color:#4ade80}.fail{color:#f87171}</style>
+</head>
+<body>
+<pre id="log"></pre>
+<script src="../vendor/JsBarcode.all.min.js"></script>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script src="../vendor/jszip.min.js"></script>
+<script src="../js/validators.js"></script>
+<script src="../js/bulk.js"></script>
+<script src="../js/exporters.js"></script>
+<script>
+(function () {
+  var log = document.getElementById('log');
+  function write(ok, msg) {
+    var line = '[' + (ok ? 'PASS' : 'FAIL') + '] ' + msg;
+    log.innerHTML += '<span class="' + (ok ? 'pass' : 'fail') + '">' + line + '</span>\n';
+  }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  var samples = {
+    CODE128: 'ABC-123456',
+    CODE39: 'CODE39-001',
+    EAN13: '5901234123457',
+    EAN8: '96385074',
+    UPC: '036000291452',
+    ITF: '1234567890',
+    codabar: 'A123456789A'
+  };
+  var settings = {
+    width: 2, height: 100, margin: 10, fontSize: 16, textMargin: 4,
+    textPosition: 'bottom', displayValue: true,
+    lineColor: '#000000', background: '#ffffff', exportScale: 2
+  };
+
+  async function run() {
+    write(typeof JsBarcode === 'function', 'JsBarcode loaded');
+    write(typeof window.jspdf !== 'undefined' && typeof window.jspdf.jsPDF === 'function', 'jsPDF loaded');
+    write(typeof JSZip !== 'undefined', 'JSZip loaded');
+    write(typeof window.BarcodeValidators !== 'undefined', 'validators.js loaded');
+    write(typeof window.BulkParser !== 'undefined', 'bulk.js loaded');
+    write(typeof window.BarcodeRender !== 'undefined', 'exporters.js loaded');
+
+    var allFormatsOk = true;
+    Object.keys(samples).forEach(function (f) {
+      var v = window.BarcodeValidators.validate(f, samples[f]);
+      if (!v.valid) { allFormatsOk = false; write(false, f + ' should be valid: ' + v.message); }
+      try {
+        var svg = window.BarcodeRender.createSVG(v.normalized, f, settings);
+        if (!svg.getAttribute('width')) allFormatsOk = false;
+      } catch (e) {
+        allFormatsOk = false;
+        write(false, f + ' render threw: ' + e.message);
+      }
+    });
+    write(allFormatsOk, 'all 7 formats render to SVG');
+
+    var svg = window.BarcodeRender.createSVG('ABC-123', 'CODE128', settings);
+    var tainted = false;
+    var blobOk = false;
+    try {
+      var canvas = await window.BarcodeRender.svgToCanvas(svg, 3, '#ffffff');
+      write(canvas.width > 0 && canvas.height > 0, 'SVG rasterised to canvas (' + canvas.width + 'x' + canvas.height + ')');
+      var blob = await window.BarcodeRender.canvasToBlob(canvas);
+      blobOk = blob.size > 1000;
+      write(blobOk, 'PNG blob produced (' + blob.size + ' bytes)');
+    } catch (e) {
+      write(false, 'SVG->PNG pipeline failed: ' + e.message);
+      if (e && e.name === 'SecurityError') tainted = true;
+    }
+    write(blobOk && !tainted, 'canvas not tainted (PNG export usable offline)');
+
+    try {
+      var p = new window.jspdf.jsPDF({ unit: 'pt', format: [300, 200] });
+      p.text('smoke test', 10, 20);
+      var imgCanvas = await window.BarcodeRender.svgToCanvas(
+        window.BarcodeRender.createSVG('ABC-123', 'CODE128', settings), 2, '#ffffff'
+      );
+      p.addImage(window.BarcodeRender.canvasToDataURL(imgCanvas), 'PNG', 50, 50, 200, 100);
+      var ab = p.output('arraybuffer');
+      write(ab.byteLength > 300, 'jsPDF PDF generation with embedded barcode (' + ab.byteLength + ' bytes)');
+    } catch (e) {
+      write(false, 'jsPDF failed: ' + e.message);
+    }
+
+    var items = window.BulkParser.parseCSVItems('value,format\n123,CODE39\n456\n', 'CODE128');
+    write(items.length === 2 && items[0].format === 'CODE39', 'bulk CSV parsing');
+
+    var zip = new JSZip();
+    zip.file('test.png', 'x');
+    var blob = await zip.generateAsync({ type: 'blob' });
+    write(blob.size > 50, 'JSZip archive generation');
+
+    log.innerHTML += '\n--- SMOKE TEST COMPLETE ---\n';
+  }
+  run().catch(function (e) { write(false, 'uncaught: ' + (e && e.message)); });
+})();
+</script>
+</body>
+</html>
